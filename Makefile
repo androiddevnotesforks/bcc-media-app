@@ -3,6 +3,12 @@
 BUILD_NUMBER=$(shell grep -i -e "version: " pubspec.yaml | cut -d " " -f 2)
 BUILD_NUMBER_KIDS=$(shell grep -i -e "version: " kids/pubspec.yaml | cut -d " " -f 2)
 
+pubgetall:
+	flutter pub get
+	cd kids && flutter pub get
+	cd submodules/bccm_flutter/bccm_core && flutter pub get
+	cd submodules/bccm_player && flutter pub get
+
 rm-locales:
 	for file in $$(find ./lib/l10n/ -name *.arb -mindepth 1 -type f); do sed -i '' '/\@\@locale/d' $$file; done
 
@@ -13,21 +19,22 @@ web-beta-upload:
 	gsutil -m cp -R build/web/* gs://bccm-web-beta
 	gsutil -m setmeta -r -h "Cache-control:no-cache, max-age=0" gs://bccm-web-beta/
 
-# See https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-cli
+# See https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/standard-changelog
 changelog:
 	standard-changelog -f -p conventionalcommits
 
 changelog-commit:
 	git diff-index --quiet HEAD -- || (echo "Working tree not clean, continue anyway? y/n" && read ans && [ $$ans == "y" ])
+# temporary tag to include the version in the changelog
+	git tag v${BUILD_NUMBER}${TAG_SUFFIX}
 	make changelog
 	git add CHANGELOG.md
 	git commit -m "chore: update changelog" || true
+	git tag --delete v${BUILD_NUMBER}${TAG_SUFFIX}
 
 # Release
 release:
-	git tag v${BUILD_NUMBER}${TAG_SUFFIX}
 	make changelog-commit
-	git tag --delete v${BUILD_NUMBER}${TAG_SUFFIX}
 	git tag v${BUILD_NUMBER}${TAG_SUFFIX}
 	git push --tags
 
@@ -71,6 +78,8 @@ bump:
 	git add pubspec.yaml
 	git commit -m "chore: bump version to $${NEW_VERSION}"
 
-update:
-	flutter pub upgrade bccm_core
-	flutter pub upgrade bccm_player
+crowdin-download:
+	crowdin download --token=$$(cat .crowdin-token)
+
+crowdin-upload:
+	crowdin upload --token=$$(cat .crowdin-token)

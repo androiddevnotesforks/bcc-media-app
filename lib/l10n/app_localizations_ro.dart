@@ -995,6 +995,9 @@ class SRo extends S {
   String get shortsLikedAndSavedDescription => 'Poți găsi în profilul tău toate scurtmetrajele care ți-au plăcut.';
 
   @override
+  String get excerptFrom => 'Excerpt from';
+
+  @override
   String get downloadedVideosGuideDescription => 'Poți găsi videourile descărcate la rubrica „Profil\".';
 
   @override
@@ -1028,6 +1031,6 @@ class SRo extends S {
 
   @override
   String skipTo(String chapter) {
-    return 'Skip to $chapter';
+    return 'Treceți la $chapter';
   }
 }

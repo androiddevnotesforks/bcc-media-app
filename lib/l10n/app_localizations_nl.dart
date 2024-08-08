@@ -995,6 +995,9 @@ class SNl extends S {
   String get shortsLikedAndSavedDescription => 'Je kunt al je favoriete shorts vinden in je profiel.';
 
   @override
+  String get excerptFrom => 'Excerpt from';
+
+  @override
   String get downloadedVideosGuideDescription => 'Je gedownloade video\'s vind je onder \"Profiel\".';
 
   @override
@@ -1028,6 +1031,6 @@ class SNl extends S {
 
   @override
   String skipTo(String chapter) {
-    return 'Skip to $chapter';
+    return 'Ga naar $chapter';
   }
 }
